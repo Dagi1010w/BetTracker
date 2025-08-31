@@ -7,7 +7,7 @@
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"></path>
         </svg>
       </div>
-      <h1 class="text-xl font-bold tracking-tight">BetTracker</h1>
+      <router-link to="/" class="text-xl font-bold tracking-tight hover:text-[var(--primary-color)] transition-colors">BetTracker</router-link>
     </div>
     <router-link to="/Tracked" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[var(--primary-color)] hover:bg-emerald-700 text-white text-sm font-semibold leading-normal shadow-md transition-colors gap-2">
       <span class="truncate">Tracked Matches</span>
