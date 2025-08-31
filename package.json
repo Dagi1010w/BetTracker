@@ -12,6 +12,7 @@
     "@tailwindcss/vite": "^4.1.12",
     "tailwindcss": "^4.1.12",
     "vue": "^3.5.18",
+    "vue-icons": "^2.0.0",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {

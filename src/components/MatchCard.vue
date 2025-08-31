@@ -25,8 +25,21 @@
           </h3>
         </div>
 
-        <!-- VS -->
-        <div class="mx-3 text-xl font-extrabold text-gray-400">VS</div>
+        <!-- Score/Time -->
+        <div class="mx-3 flex flex-col items-center">
+          <div v-if="match.status === 'LIVE' || match.status === 'IN_PLAY' || match.status === 'FINISHED'" class="text-2xl font-bold text-white">
+            {{ match.score }}
+          </div>
+          <div v-else class="text-lg font-semibold text-gray-300">
+            {{ match.time }}
+          </div>
+          <div v-if="match.status === 'LIVE' || match.status === 'IN_PLAY'" class="text-xs text-red-400 font-semibold mt-1">
+            LIVE
+          </div>
+          <div v-else-if="match.status === 'FINISHED'" class="text-xs text-gray-400 font-semibold mt-1">
+            FT
+          </div>
+        </div>
 
         <!-- Team 2 -->
         <div class="flex flex-col items-center flex-1">

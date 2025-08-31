@@ -34,11 +34,34 @@
         
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <MatchCard
-            v-for="match in filteredMatches"
+            v-for="match in paginatedMatches"
             :key="match.id"
             :match="match"
             @track="handleTrack"
           />
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="totalPages > 1" class="flex justify-center items-center mt-8 space-x-2">
+          <button
+            @click="prevPage"
+            :disabled="currentPage === 1"
+            class="px-3 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors"
+          >
+            Previous
+          </button>
+
+          <span class="text-gray-400">
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+
+          <button
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+            class="px-3 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
@@ -49,20 +72,31 @@
 import SearchBar from '../components/SearchBar.vue';
 import MatchCard from '../components/MatchCard.vue';
 import { useMatchesStore } from '../store/matches';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
-const { 
-  matches, 
-  loading, 
-  error, 
-  filteredMatches, 
-  fetchMatches, 
+const {
+  matches,
+  loading,
+  error,
+  filteredMatches,
+  paginatedMatches,
+  currentPage,
+  totalPages,
+  fetchMatches,
   setSearchQuery,
-  addTrackedMatch
+  addTrackedMatch,
+  nextPage,
+  prevPage
 } = useMatchesStore();
 
+const searchQuery = ref('')
+
+watch(searchQuery, (newVal) => {
+  setSearchQuery(newVal)
+})
+
 const handleSearch = (query) => {
-  setSearchQuery(query);
+  searchQuery.value = query
 };
 
 const handleTrack = (match) => {

@@ -15,6 +15,13 @@
               {{ matches.length }}
             </span>
           </div>
+          <button
+            @click="refreshMatches"
+            class="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+          >
+            <span class="material-icons">refresh</span>
+            Refresh
+          </button>
         </div>
 
         <!-- Grid -->
@@ -22,31 +29,38 @@
           <div
             v-for="(match, i) in matches"
             :key="i"
-            class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border-2"
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border-2 cursor-pointer"
             :class="{
               'border-emerald-500': match.status === 'LIVE',
               'opacity-70': match.status === 'FINISHED'
             }"
+            @click="goToMatchDetail(match)"
           >
             <div class="p-5">
               <div class="flex justify-between items-start">
                 <div>
                   <!-- Status -->
-                  <div v-if="match.status === 'LIVE'" class="flex items-center gap-2 mb-2">
+                  <div v-if="match.status === 'LIVE' || match.status === 'IN_PLAY'" class="flex items-center gap-2 mb-2">
                     <span class="blinking-dot h-2 w-2 bg-emerald-500 rounded-full"></span>
                     <p class="text-sm font-medium text-emerald-500">LIVE</p>
                   </div>
                   <p
-                    v-else-if="match.status === 'UPCOMING'"
+                    v-else-if="match.status === 'SCHEDULED' || match.status === 'TIMED'"
                     class="text-sm font-medium text-blue-500 mb-2"
                   >
                     UPCOMING
                   </p>
                   <p
-                    v-else
+                    v-else-if="match.status === 'FINISHED'"
                     class="text-sm font-medium text-gray-500 mb-2"
                   >
                     FINISHED
+                  </p>
+                  <p
+                    v-else
+                    class="text-sm font-medium text-orange-500 mb-2"
+                  >
+                    {{ match.status }}
                   </p>
 
                   <!-- Teams -->
@@ -54,25 +68,28 @@
 
                   <!-- Info -->
                   <p class="text-gray-500 dark:text-gray-300 text-sm">
-                    <span v-if="match.status === 'LIVE'">{{ match.time }} </span>
+                    <span v-if="match.status === 'LIVE' || match.status === 'IN_PLAY'">
+                      <span v-if="match.minute !== null">{{ match.minute }}' </span>
+                      <span v-else>{{ match.time }} </span>
+                    </span>
                     <span
                       v-if="match.status === 'FINISHED'"
                       class="font-semibold"
                       >Final</span
                     >
                     <span
-                      v-if="match.status !== 'UPCOMING'"
+                      v-if="match.status === 'LIVE' || match.status === 'IN_PLAY' || match.status === 'FINISHED'"
                       class="font-semibold text-lg text-gray-800 dark:text-white ml-1"
                     >
                       {{ match.score }}
                     </span>
-                    <span v-if="match.status === 'UPCOMING'">{{ match.time }}</span>
+                    <span v-if="match.status === 'SCHEDULED' || match.status === 'TIMED'">{{ match.time }}</span>
                   </p>
                 </div>
 
                 <!-- Delete -->
                 <button
-                  @click="removeMatch(i)"
+                  @click.stop="removeMatch(i)"
                   class="text-gray-400 hover:text-red-500 dark:hover:text-red-400"
                 >
                   <span class="material-icons">delete</span>
@@ -113,10 +130,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from 'vue-router';
 import { useMatchesStore } from '../store/matches';
 
-const { trackedMatches, removeTrackedMatch } = useMatchesStore();
+const router = useRouter();
+
+const { trackedMatches, removeTrackedMatch, startLiveUpdates, stopLiveUpdates, fetchMatches } = useMatchesStore();
 
 const darkMode = ref(false);
 const toastVisible = ref(false);
@@ -145,6 +165,27 @@ const showToast = (msg) => {
     toastVisible.value = false;
   }, 3000);
 };
+
+// Refresh matches manually
+const refreshMatches = async () => {
+  await fetchMatches();
+  showToast("Matches refreshed.");
+};
+
+// Start live updates when component is mounted
+onMounted(() => {
+  startLiveUpdates();
+});
+
+// Go to match detail
+const goToMatchDetail = (match) => {
+  router.push(`/matches/${match.id}`);
+};
+
+// Stop live updates when component is unmounted
+onUnmounted(() => {
+  stopLiveUpdates();
+});
 </script>
 
 <style scoped>
