@@ -2,9 +2,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // Import your views/components
-import Home from '../pages/Home.vue';
-import Tracked from '../pages/Tracked.vue';
-import MatchesDetail from '../pages/MatchesDetail.vue';
+import Home from '@/pages/Home.vue';
+import Tracked from '@/pages/Tracked.vue';
+import MatchesDetail from '@/pages/MatchesDetail.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
